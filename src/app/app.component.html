@@ -1,0 +1,6 @@
+<main>
+  <router-outlet></router-outlet>
+  <div class="flex justify-content-center align-items-center w100 h100" *ngIf="!isAuthorized">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+  </div>
+</main>

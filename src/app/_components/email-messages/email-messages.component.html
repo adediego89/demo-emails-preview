@@ -1,0 +1,35 @@
+<p-accordion [multiple]="true" *ngIf="messages">
+    <p-accordionTab [header]="message.time" *ngFor="let message of messages.entities">
+        <div class="flex">
+            <label>From:</label>
+            <label>{{message.from.email}}</label>
+        </div>
+        <div class="flex">
+            <label>To:</label>
+            <label>{{message.to[0].email}}</label>
+        </div>
+        <div class="flex">
+            <label>Subject:</label>
+            <label>{{message.subject}}</label>
+        </div>
+        <p>{{message.textBodyPreview}}</p>
+        
+        <!-- "id"?: string;
+        "name"?: string;
+        "to": Array<Models.EmailAddress>;
+        "cc"?: Array<Models.EmailAddress>;
+        "bcc"?: Array<Models.EmailAddress>;
+        "from": Models.EmailAddress;
+        "replyTo"?: Models.EmailAddress;
+        "subject"?: string;
+        "attachments"?: Array<Models.Attachment>;
+        "textBodyPreview"?: string;
+        "time"?: string;
+        "historyIncluded"?: boolean;
+        "state"?: string;
+        "draftType"?: string;
+        "emailSizeBytes"?: number;
+        "maxEmailSizeBytes"?: number;
+        "selfUri"?: string; -->
+    </p-accordionTab>
+</p-accordion>

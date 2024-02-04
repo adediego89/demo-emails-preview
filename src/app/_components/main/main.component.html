@@ -1,0 +1,74 @@
+<div class="card">
+    <p-tabView>
+        <p-tabPanel header="ByConversationIds">
+            
+            <div class="field grid">
+                <label for="conversationId" class="col-12 md:col-6">ConversationId:</label>
+                <div class="col-12 md:col-6">
+                    <div class="p-inputgroup">
+                        <input type="text" id="conversationId" name="conversationId" pInputText [(ngModel)]="conversationId" />
+                        <button type="button" pButton icon="pi pi-search" styleClass="p-button-warn" (click)="findMessages()"></button>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <app-email-messages [messages]="messages"></app-email-messages>
+
+        </p-tabPanel>
+        <p-tabPanel header="Analytics">
+            
+            <div class="flex justify-content-center mb-3">
+                <p-button (click)="showDialog()" icon="pi pi-calendar" label="Date"></p-button>
+            </div>
+            
+        
+            <p-table [columns]="cols" [value]="conversations" [tableStyle]="{ 'min-width': '50rem' }" dataKey="conversationId" [rowExpandMode]="'multiple'" (onRowExpand)="onRowExpand($event)">
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th style="width: 5rem"></th>
+                        <th [pSortableColumn]="col.header" *ngFor="let col of columns">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-conversation let-columns="columns" let-expanded="expanded">
+                    <tr>
+                        <td>
+                            <button type="button" pButton pRipple [pRowToggler]="conversation" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                        </td>
+                        <td *ngFor="let col of columns">
+                            {{ displayData(conversation, col.field) }}
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="rowexpansion" let-conversation let-columns="columns">
+                    <tr>
+                        <td colspan="7">
+                            <div class="w-full" *ngIf="!conversation.dataLoaded"> L O A D I N G</div>
+
+                            <div class="w-full" *ngIf="conversation.dataLoaded">
+                                <app-email-messages [messages]="conversation.messages"></app-email-messages>
+                            </div>
+                        </td>
+                    </tr>
+                    
+
+                </ng-template>
+            </p-table>
+
+            
+            <p-dialog header="Select date interval" [(visible)]="dateDialogVisible">
+                <div class="card flex justify-content-around w-full">
+                    <p-calendar class="max-w-full mr-2" [(ngModel)]="dateFrom" [inline]="true" [showWeek]="true" [showTime]="true"></p-calendar>
+                    <p-calendar class="max-w-full"      [(ngModel)]="dateTo"   [inline]="true" [showWeek]="true" [showTime]="true"></p-calendar>
+                </div>
+                <ng-template pTemplate="footer">
+                    <p-button icon="pi pi-search" (click)="findConversations()" label="Search" styleClass="p-button-text" [disabled]="!dateFrom || !dateTo || dateFrom > dateTo"></p-button>
+                </ng-template>
+            </p-dialog>
+            
+        </p-tabPanel>
+    </p-tabView>
+</div>
