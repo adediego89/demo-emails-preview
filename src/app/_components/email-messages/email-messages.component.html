@@ -1,18 +1,41 @@
 <p-accordion [multiple]="true" *ngIf="messages">
-    <p-accordionTab [header]="message.time" *ngFor="let message of messages.entities">
-        <div class="flex">
-            <label>From:</label>
-            <label>{{message.from.email}}</label>
-        </div>
-        <div class="flex">
-            <label>To:</label>
-            <label>{{message.to[0].email}}</label>
-        </div>
-        <div class="flex">
-            <label>Subject:</label>
-            <label>{{message.subject}}</label>
-        </div>
-        <p>{{message.textBodyPreview}}</p>
+    <p-accordionTab *ngFor="let message of messages.entities">
+        <ng-template pTemplate="header">
+            <div class="flex align-items-center justify-content-between w-full">
+                <span class="vertical-align-middle">{{message.subject}}</span>
+                <span class="vertical-align-middle">{{message.time | date:'short'}}</span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid">
+                <label class="col-fixed titleCol">From:</label>
+                <label class="col">{{message.from.email}}</label>
+            </div>
+            <div class="grid">
+                <label class="col-fixed titleCol">To:</label>
+                <label class="col">
+                    <span *ngFor="let item of message.to; let i = index;">{{item.email}}{{i + 1 < message.to.length ? ', ' : ''}}</span>
+                </label>
+            </div>
+            <div class="grid">
+                <label class="col-fixed titleCol">Subject:</label>
+                <label class="col">{{message.subject}}</label>
+            </div>
+            <div class="grid" *ngIf="message.cc && message.cc.length > 0">
+                <label class="col-fixed titleCol">Cc:</label>
+                <label class="col">
+                    <span *ngFor="let item of message.cc; let i = index;">{{item.email}}{{i + 1 < message.cc.length ? ', ' : ''}}</span>
+                </label>
+            </div>
+            <div class="grid" *ngIf="message.bcc && message.bcc.length > 0">
+                <label class="col-fixed titleCol">Bcc:</label>
+                <label class="col">
+                    <span *ngFor="let item of message.bcc; let i = index;">{{item.email}}{{i + 1 < message.bcc.length ? ', ' : ''}}</span>
+                </label>
+            </div>
+            <p>{{message.textBodyPreview}}</p>
+        </ng-template>
+        
         
         <!-- "id"?: string;
         "name"?: string;

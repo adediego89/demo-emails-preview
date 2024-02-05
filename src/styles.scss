@@ -4,6 +4,12 @@ html {
     font-size: 14px;
 }
 
+body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
 .p-calendar {
     height: 100%;
     .p-datepicker {
@@ -16,4 +22,12 @@ html {
         } 
     
     }
+}
+
+.p-tabview-panels {
+    padding: 0;
+}
+
+.p-autocomplete .p-autocomplete-multiple-container {
+    width: 100%;
 }

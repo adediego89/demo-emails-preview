@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { AutoCompleteCompleteEvent, AutoCompleteOnSelectEvent } from 'primeng/autocomplete';
 import { TableRowExpandEvent } from 'primeng/table';
 import { Models } from 'purecloud-platform-client-v2';
 import { GenesysCloudService } from 'src/app/_services/genesys-cloud.service';
@@ -26,6 +27,12 @@ export class MainComponent implements OnInit{
   dateTo: Date = new Date();
 
   dateDialogVisible: boolean = false;
+  filtersVisible: boolean = false;
+
+  queues: Models.Queue[] = [];
+  selectedQueues: Models.Queue[] = [];
+  users: Models.User[] = [];
+  selectedUsers: Models.User[] = [];
 
     
 
@@ -43,12 +50,11 @@ export class MainComponent implements OnInit{
     ];
 
     this.cols = [
-      { field: 'originatingDirection', header: 'Direction' },
       { field: 'conversationStart', header: 'Date' },
+      { field: 'remote', header: 'Remote' },
       { field: 'queue', header: 'Queue' },
       { field: 'users', header: 'Users' },
-      { field: 'remote', header: 'Remote' },
-      { field: 'duration', header: 'Conversation Duration' }
+      { field: 'subject', header: 'Subject' }
   ];
 
   }
@@ -90,6 +96,23 @@ export class MainComponent implements OnInit{
         }
       ]
     };
+
+    if (this.selectedQueues.length > 0) {
+      let queuesFilter: Models.SegmentDetailQueryFilter = { type: 'or', predicates: [] };
+      this.selectedQueues.forEach(e => {
+        queuesFilter.predicates?.push({ dimension: 'queueId', value: e.id });
+      });
+      query.segmentFilters?.push(queuesFilter);
+    }
+
+    if (this.selectedUsers.length > 0) {
+      let usersFilter: Models.SegmentDetailQueryFilter = { type: 'or', predicates: [] };
+      this.selectedUsers.forEach(e => {
+        usersFilter.predicates?.push({ dimension: 'userId', value: e.id });
+      });
+      query.segmentFilters?.push(usersFilter);
+    }
+
     // TODO: Send query
     this.gcSvc.getConversations(query)
       .then(data => this.conversations = data.conversations!)
@@ -99,11 +122,19 @@ export class MainComponent implements OnInit{
 
   displayData(conversation: Models.AnalyticsConversationWithoutAttributes, columnField: string): any {
 
+    if (!conversation.participants) return '-';
+
     switch(columnField) {
       case 'originatingDirection': return conversation.originatingDirection;
-      case 'conversationStart': return conversation.conversationStart;
-      case 'queue': return '';
-      case 'users': return '';
+      case 'conversationStart': return new Date(conversation.conversationStart!).toLocaleString();
+      case 'queue':
+        const foundAcd = conversation.participants.filter(e => e.purpose === 'acd');
+        if (foundAcd.length === 0) return '-';
+        return foundAcd.map(e => e.participantName).toString();
+      case 'users':
+        const foundUsers = conversation.participants.filter(e => e.purpose === 'agent');
+        if (foundUsers.length === 0) return '-';
+        return foundUsers.map(e => e.participantName).toString();
       case 'remote':
         const externalParticipant = conversation.participants?.find(e => e.purpose === 'external' || 'customer');
         if (externalParticipant) {
@@ -111,8 +142,53 @@ export class MainComponent implements OnInit{
         }
         return '';
       case 'duration': return '';
+      case 'subject':
+        if (!conversation.participants[0].sessions || !conversation.participants[0].sessions[0].segments) return '-';
+        return conversation.participants[0].sessions[0].segments[0].subject ? conversation.participants[0].sessions[0].segments[0].subject : '-';
+      default: return '';
     }
 
+  }
+
+  getIntervalLabel(): string {
+    const dateOpts: Intl.DateTimeFormatOptions = { hour12: false, hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric' };
+    return `${this.dateFrom.toLocaleString('pl-PL', dateOpts)} - ${this.dateTo.toLocaleString('pl-PL', dateOpts)}`;
+  }
+
+  toggleFilters() {
+    this.filtersVisible = !this.filtersVisible;
+  }
+
+  onQueueSearch(event: AutoCompleteCompleteEvent) {
+    console.log(`(onQueueSelect) query: ${event.query}`);
+    this.gcSvc.getQueues({ name: `*${event.query}*` })
+      .then(d => this.queues = d.entities ? d.entities.filter(e => !this.selectedQueues.find(f => f.id === e.id)) : [])
+      .catch(err => console.error(err));
+  }
+
+  onQueueSelect(event: AutoCompleteOnSelectEvent) {
+    console.log(`(onQueueSelect)`, event);
+    // Prevent duplicates
+    const found = this.selectedQueues.find(e => e.id === event.value.id);
+    if (!found) this.selectedQueues.push(event.value);
+  }
+
+  onUserSearch(event: AutoCompleteCompleteEvent) {
+    console.log(`(onUserSearch) query: ${event.query}`);
+    this.gcSvc.searchUsers({ query: [{ type: 'QUERY_STRING', value: event.query, fields: ['name'] }] })
+      .then(d => this.users = d.results.filter(e => !this.selectedUsers.includes(e)))
+      .catch(err => console.error(err));
+  }
+
+  onUserSelect(event: AutoCompleteOnSelectEvent) {
+    console.log(`(onUserSelect)`, event);
+    // Prevent duplicates
+    const found = this.selectedUsers.find(e => e.id === event.value.id);
+    if (!found) this.selectedUsers.push(event.value);
+  }
+
+  removeItem(where: any[], item: any) {
+    where.splice(where.indexOf(item), 1);
   }
 
 }

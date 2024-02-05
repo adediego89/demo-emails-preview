@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 // Components
 import { AppComponent } from './app.component';
 import { MainComponent } from './_components/main/main.component';
+import { EmailMessagesComponent } from './_components/email-messages/email-messages.component';
 // Guards
 import { AuthGuard } from './_guards/auth.guard';
 // UI - Primeng
@@ -17,7 +18,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { TableModule } from 'primeng/table';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
-import { EmailMessagesComponent } from './_components/email-messages/email-messages.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+
 
 
 @NgModule({
@@ -37,7 +39,8 @@ import { EmailMessagesComponent } from './_components/email-messages/email-messa
     AccordionModule,
     TableModule,
     CalendarModule,
-    DialogModule
+    DialogModule,
+    AutoCompleteModule
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]

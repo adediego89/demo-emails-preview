@@ -1,0 +1,17 @@
+.filtersContainer {
+    padding: 1rem;
+}
+
+.selectedItem {
+    background-color: #3B82F6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 25px;
+    margin-bottom: 0.5rem;
+
+    .itemLabel {
+        margin-left: 1rem;
+    }
+}

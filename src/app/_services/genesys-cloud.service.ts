@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AnalyticsApi, ApiClient, AuthData, ConversationsApi, Models, UsersApi } from 'purecloud-platform-client-v2';
+import { AnalyticsApi, ApiClient, AuthData, ConversationsApi, Models, RoutingApi, UsersApi } from 'purecloud-platform-client-v2';
 import { UrlTree, Params } from '@angular/router';
 
 // Keys for localStorage
@@ -28,6 +28,7 @@ export class GenesysCloudService {
   private conversationsApi = new ConversationsApi();
   private analyticsApi = new AnalyticsApi();
   private usersApi = new UsersApi();
+  private routingApi = new RoutingApi();
 
   // Authorization values
   language: string = 'en-us';
@@ -94,6 +95,11 @@ export class GenesysCloudService {
     return this.usersApi.getUsersMe();
   }
 
+  searchUsers(opts: Models.UserSearchRequest) {
+    return this.usersApi.postUsersSearch(opts)
+  }
+
+
   // Conversations API
 
   getConversation(conversationId: string) {
@@ -112,6 +118,12 @@ export class GenesysCloudService {
 
   getConversations(query: Models.ConversationQuery) {
     return this.analyticsApi.postAnalyticsConversationsDetailsQuery(query);
+  }
+
+  // Routing API
+
+  getQueues(opts?: RoutingApi.getRoutingQueuesOptions) {
+    return this.routingApi.getRoutingQueues(opts);
   }
 
 }
