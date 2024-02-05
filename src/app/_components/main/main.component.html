@@ -1,108 +1,111 @@
-<p-tabView>
-    <p-tabPanel header="Analytics">
-        
-        <div class="flex justify-content-center p-2">
-            <p-button (click)="showDialog()" [text]="true" [label]="getIntervalLabel()"></p-button>
-        </div>
-
-        <p-table class="flex-1" dataKey="conversationId"
-            [columns]="cols"
-            [value]="conversations"
-            [tableStyle]="{ 'min-width': '50rem' }" 
-            [rowExpandMode]="'multiple'"
-            [resizableColumns]="true"
-            (onRowExpand)="onRowExpand($event)">
-            <ng-template pTemplate="header" let-columns>
-                <tr>
-                    <th style="width: 5rem"></th>
-                    <th pResizableColumn [pSortableColumn]="col.header" *ngFor="let col of columns">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                    </th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-conversation let-columns="columns" let-expanded="expanded">
-                <tr>
-                    <td>
-                        <button type="button" pButton pRipple [pRowToggler]="conversation" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-                    </td>
-                    <td *ngFor="let col of columns">
-                        {{ displayData(conversation, col.field) }}
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="rowexpansion" let-conversation let-columns="columns">
-                <tr>
-                    <td colspan="7">
-                        <div class="flex justify-content-center align-items-center w-full" *ngIf="!conversation.dataLoaded">
-                            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
-                        </div>
-
-                        <div class="w-full" *ngIf="conversation.dataLoaded">
-                            <app-email-messages [messages]="conversation.messages"></app-email-messages>
-                        </div>
-                    </td>
-                </tr>
-                
-
-            </ng-template>
-        </p-table>
-
-        <p-dialog header="Filters" [(visible)]="dateDialogVisible" [modal]="true">
-            <div class="card flex justify-content-around w-full mb-3">
-                <p-calendar class="max-w-full mr-2" [(ngModel)]="dateFrom" [inline]="true" [firstDayOfWeek]="1" [showTime]="true"></p-calendar>
-                <p-calendar class="max-w-full"      [(ngModel)]="dateTo"   [inline]="true" [firstDayOfWeek]="1" [showTime]="true"></p-calendar>
-            </div>
+<div class="h-full" style="overflow: auto;">
+    <p-tabView>
+        <p-tabPanel header="Analytics">
             
-            <div class="field grid">
-                <label for="queue" class="col-12 mb-2 md:col-2 md:mb-0">Queue</label>
-                <div class="col-12 md:col-10">
-                    <p-autoComplete id="queue" styleClass="w-full" placeholder="Search for queues" field="name"
-                        [overlayOptions]="{ appendTo: 'body' }"
-                        [multiple]="true"
-                        [suggestions]="queues"
-                        [(ngModel)]="selectedQueues"
-                        (completeMethod)="onQueueSearch($event)"
-                        (onSelect)="onQueueSelect($event)">
-                    </p-autoComplete>
-                </div>
+            <div class="flex justify-content-center p-2">
+                <p-button (click)="showDialog()" [text]="true" [label]="getIntervalLabel()"></p-button>
             </div>
-            
-            <div class="field grid">
-                <label for="user" class="col-12 mb-2 md:col-2 md:mb-0">User</label>
-                <div class="col-12 md:col-10">
-                    <p-autoComplete id="user" styleClass="w-full" placeholder="Search for users" field="name"
-                        [overlayOptions]="{ appendTo: 'body' }"
-                        [multiple]="true"
-                        [suggestions]="users"
-                        [(ngModel)]="selectedUsers"
-                        (completeMethod)="onUserSearch($event)"
-                        (onSelect)="onUserSelect($event)">
-                    </p-autoComplete>
-                </div> 
-            </div>
-            
-            <ng-template pTemplate="footer">
-                <p-button icon="pi pi-search" (click)="findConversations()" label="Search" styleClass="p-button-text" [disabled]="!dateFrom || !dateTo || dateFrom > dateTo"></p-button>
-            </ng-template>
-        </p-dialog>
-        
-    </p-tabPanel>
-    <p-tabPanel header="ByConversationIds">
-        <div class="p-3">
-            <div class="field grid">
-                <label for="conversationId" class="col-12 md:col-6">ConversationId:</label>
-                <div class="col-12 md:col-6">
-                    <div class="p-inputgroup">
-                        <input type="text" id="conversationId" name="conversationId" pInputText [(ngModel)]="conversationId" />
-                        <button type="button" pButton icon="pi pi-search" styleClass="p-button-warn" (click)="findMessages()"></button>
-                    </div>
+    
+            <p-table class="flex-1" dataKey="conversationId"
+                [columns]="cols"
+                [value]="conversations"
+                [tableStyle]="{ 'min-width': '50rem' }" 
+                [rowExpandMode]="'multiple'"
+                [resizableColumns]="true"
+                (onRowExpand)="onRowExpand($event)">
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th style="width: 3rem"></th>
+                        <th pResizableColumn [pSortableColumn]="col.header" *ngFor="let col of columns">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-conversation let-columns="columns" let-expanded="expanded">
+                    <tr>
+                        <td>
+                            <p-button class="customIconBtn" [pRowToggler]="conversation" size="small" [plain]="true" [text]="true" [rounded]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></p-button>
+                        </td>
+                        <td *ngFor="let col of columns">
+                            {{ displayData(conversation, col.field) }}
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="rowexpansion" let-conversation let-columns="columns">
+                    <tr>
+                        <td colspan="7">
+                            <div class="flex justify-content-center align-items-center w-full" *ngIf="!conversation.dataLoaded">
+                                <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+                            </div>
+    
+                            <div class="w-full" *ngIf="conversation.dataLoaded">
+                                <app-email-messages [messages]="conversation.messages"></app-email-messages>
+                            </div>
+                        </td>
+                    </tr>
                     
+    
+                </ng-template>
+            </p-table>
+    
+            <p-dialog header="Filters" [(visible)]="dateDialogVisible" [modal]="true">
+                <div class="card flex justify-content-around w-full mb-3">
+                    <p-calendar class="max-w-full mr-2" [(ngModel)]="dateFrom" [inline]="true" [firstDayOfWeek]="1" [showTime]="true"></p-calendar>
+                    <p-calendar class="max-w-full"      [(ngModel)]="dateTo"   [inline]="true" [firstDayOfWeek]="1" [showTime]="true"></p-calendar>
                 </div>
+                
+                <div class="field grid">
+                    <label for="queue" class="col-12 mb-2 md:col-2 md:mb-0">Queue</label>
+                    <div class="col-12 md:col-10">
+                        <p-autoComplete id="queue" styleClass="w-full" placeholder="Search for queues" field="name"
+                            [overlayOptions]="{ appendTo: 'body' }"
+                            [multiple]="true"
+                            [suggestions]="queues"
+                            [(ngModel)]="selectedQueues"
+                            (completeMethod)="onQueueSearch($event)"
+                            (onSelect)="onQueueSelect($event)">
+                        </p-autoComplete>
+                    </div>
+                </div>
+                
+                <div class="field grid">
+                    <label for="user" class="col-12 mb-2 md:col-2 md:mb-0">User</label>
+                    <div class="col-12 md:col-10">
+                        <p-autoComplete id="user" styleClass="w-full" placeholder="Search for users" field="name"
+                            [overlayOptions]="{ appendTo: 'body' }"
+                            [multiple]="true"
+                            [suggestions]="users"
+                            [(ngModel)]="selectedUsers"
+                            (completeMethod)="onUserSearch($event)"
+                            (onSelect)="onUserSelect($event)">
+                        </p-autoComplete>
+                    </div> 
+                </div>
+                
+                <ng-template pTemplate="footer">
+                    <p-button icon="pi pi-search" (click)="findConversations()" label="Search" styleClass="p-button-text" [disabled]="!dateFrom || !dateTo || dateFrom > dateTo"></p-button>
+                </ng-template>
+            </p-dialog>
+            
+        </p-tabPanel>
+        <p-tabPanel header="ByConversationIds">
+            <div class="p-3">
+                <div class="field grid">
+                    <label for="conversationId" class="col-12 md:col-6">ConversationId:</label>
+                    <div class="col-12 md:col-6">
+                        <div class="p-inputgroup">
+                            <input type="text" id="conversationId" name="conversationId" pInputText [(ngModel)]="conversationId" />
+                            <button type="button" pButton icon="pi pi-search" styleClass="p-button-warn" (click)="findMessages()"></button>
+                        </div>
+                        
+                    </div>
+                </div>
+    
+                <app-email-messages [messages]="messages"></app-email-messages>
+    
             </div>
+        </p-tabPanel>
+    </p-tabView>
+</div>
 
-            <app-email-messages [messages]="messages"></app-email-messages>
-
-        </div>
-    </p-tabPanel>
-</p-tabView>

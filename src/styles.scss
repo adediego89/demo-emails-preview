@@ -31,3 +31,19 @@ body {
 .p-autocomplete .p-autocomplete-multiple-container {
     width: 100%;
 }
+
+.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.5rem;
+}
+
+.customIconBtn {
+
+    .p-button.p-button-icon-only {
+        width: 2rem;
+
+        &.p-button-rounded {
+            height: 2rem;
+        }
+    }
+
+}
